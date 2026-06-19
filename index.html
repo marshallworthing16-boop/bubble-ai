@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bubble[ai] — Your AI Companion</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --purple:     #7c3aed;
+      --purple-light: #a78bfa;
+      --purple-dark:  #4c1d95;
+      --green:      #22c55e;
+      --bg:         #0d0d14;
+      --surface:    #13131f;
+      --surface2:   #1a1a2e;
+      --text:       #f1f0ff;
+      --muted:      #9ca3af;
+      --border:     rgba(124,58,237,0.25);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background: rgba(13,13,20,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 1.3rem; font-weight: 700; color: var(--text);
+      text-decoration: none; letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--purple-light); }
+    nav ul { list-style: none; display: flex; gap: 2rem; }
+    nav ul a {
+      color: var(--muted); text-decoration: none; font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    nav ul a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--purple); color: #fff; border: none;
+      padding: 0.5rem 1.25rem; border-radius: 8px;
+      font-size: 0.9rem; cursor: pointer; text-decoration: none;
+      transition: background 0.2s;
+    }
+    .nav-cta:hover { background: #6d28d9; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 7rem 2rem 4rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 700px; }
+
+    /* Bubble sphere SVG */
+    .bubble-sphere {
+      width: 130px; height: 130px; margin: 0 auto 2rem;
+      animation: float 3.5s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-12px); }
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 3.8rem);
+      font-weight: 800; letter-spacing: -1px;
+      background: linear-gradient(135deg, #fff 0%, var(--purple-light) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+    .hero-sub {
+      font-size: 1.15rem; color: var(--muted); margin-bottom: 2.5rem;
+      max-width: 520px; margin-left: auto; margin-right: auto;
+    }
+    .hero-btns {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.8rem 1.8rem; border-radius: 10px;
+      font-size: 1rem; font-weight: 600; text-decoration: none;
+      cursor: pointer; border: none; transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--purple); color: #fff;
+      box-shadow: 0 0 24px rgba(124,58,237,0.45);
+    }
+    .btn-primary:hover {
+      background: #6d28d9;
+      box-shadow: 0 0 32px rgba(124,58,237,0.65);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      background: transparent; color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--purple-light); color: var(--purple-light);
+      transform: translateY(-1px);
+    }
+    .btn-green {
+      background: var(--green); color: #fff;
+      box-shadow: 0 0 20px rgba(34,197,94,0.4);
+    }
+    .btn-green:hover {
+      background: #16a34a;
+      box-shadow: 0 0 28px rgba(34,197,94,0.6);
+      transform: translateY(-1px);
+    }
+
+    .badge {
+      display: inline-block; padding: 0.3rem 0.9rem;
+      background: rgba(124,58,237,0.15); border: 1px solid var(--border);
+      border-radius: 999px; font-size: 0.8rem; color: var(--purple-light);
+      margin-bottom: 1.2rem; letter-spacing: 0.5px;
+    }
+
+    /* ── FEATURES ── */
+    #features {
+      padding: 6rem 2rem;
+      background: var(--surface);
+    }
+    .section-title {
+      text-align: center; font-size: 2rem; font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .section-sub {
+      text-align: center; color: var(--muted); margin-bottom: 3.5rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem; max-width: 1100px; margin: 0 auto;
+    }
+    .feature-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.8rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover {
+      border-color: var(--purple-light);
+      transform: translateY(-3px);
+    }
+    .feature-icon { font-size: 2rem; margin-bottom: 0.8rem; }
+    .feature-card h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+    .feature-card p { color: var(--muted); font-size: 0.92rem; }
+
+    /* ── DOWNLOAD ── */
+    #download {
+      padding: 6rem 2rem;
+      background: var(--bg);
+    }
+    .download-box {
+      max-width: 760px; margin: 0 auto;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 3rem 2.5rem;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(124,58,237,0.12);
+    }
+    .download-box h2 {
+      font-size: 1.9rem; font-weight: 700; margin-bottom: 0.6rem;
+    }
+    .download-box p {
+      color: var(--muted); margin-bottom: 2rem; font-size: 0.97rem;
+    }
+    .download-options {
+      display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .version-tag {
+      font-size: 0.8rem; color: var(--muted); margin-top: 0.8rem;
+    }
+    .divider {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 1.8rem 0; color: var(--muted); font-size: 0.85rem;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* trial info strip */
+    .trial-strip {
+      display: flex; align-items: center; gap: 1rem;
+      background: rgba(124,58,237,0.08);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem 1.4rem;
+      text-align: left; font-size: 0.88rem; color: var(--muted);
+      margin-top: 1.5rem;
+    }
+    .trial-strip .icon { font-size: 1.5rem; flex-shrink: 0; }
+
+    /* ── ABOUT ── */
+    #about {
+      padding: 6rem 2rem;
+      background: var(--surface);
+    }
+    .about-inner {
+      max-width: 700px; margin: 0 auto; text-align: center;
+    }
+    .about-inner p { color: var(--muted); font-size: 1rem; margin-bottom: 1rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem; text-align: center;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 0.85rem;
+    }
+    footer a { color: var(--purple-light); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      nav ul { display: none; }
+      .download-options { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">Bubble<span>[ai]</span></a>
+  <ul>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <a class="nav-cta" href="#download">Get Bubble</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="badge">✨ Version 1 — Now Available</div>
+
+    <!-- Bubble Sphere -->
+    <svg class="bubble-sphere" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="sphereGrad" cx="38%" cy="32%" r="65%">
+          <stop offset="0%"   stop-color="#c4b5fd"/>
+          <stop offset="45%"  stop-color="#7c3aed"/>
+          <stop offset="100%" stop-color="#2e1065"/>
+        </radialGradient>
+        <radialGradient id="shineGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stop-color="#fff" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- shadow -->
+      <ellipse cx="65" cy="122" rx="32" ry="6" fill="#000" opacity="0.3"/>
+      <!-- body -->
+      <circle cx="65" cy="63" r="55" fill="url(#sphereGrad)" filter="url(#glow)"/>
+      <!-- shine -->
+      <ellipse cx="48" cy="42" rx="18" ry="12" fill="url(#shineGrad)"/>
+      <!-- blush left -->
+      <ellipse cx="40" cy="76" rx="9" ry="5" fill="#f9a8d4" opacity="0.55"/>
+      <!-- blush right -->
+      <ellipse cx="90" cy="76" rx="9" ry="5" fill="#f9a8d4" opacity="0.55"/>
+      <!-- left eye white -->
+      <ellipse cx="51" cy="62" rx="9" ry="10" fill="#fff"/>
+      <!-- right eye white -->
+      <ellipse cx="79" cy="62" rx="9" ry="10" fill="#fff"/>
+      <!-- left pupil -->
+      <ellipse cx="53" cy="64" rx="5" ry="6" fill="#22c55e"/>
+      <circle  cx="54" cy="63" r="3" fill="#0f4422"/>
+      <circle  cx="55.5" cy="61.5" r="1.2" fill="#fff"/>
+      <!-- right pupil -->
+      <ellipse cx="81" cy="64" rx="5" ry="6" fill="#22c55e"/>
+      <circle  cx="82" cy="63" r="3" fill="#0f4422"/>
+      <circle  cx="83.5" cy="61.5" r="1.2" fill="#fff"/>
+      <!-- smile -->
+      <path d="M 52 80 Q 65 92 78 80" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+
+    <h1>Meet Bubble.</h1>
+    <p class="hero-sub">Your personal AI companion. She chats, searches, plays music, helps you grind games, and genuinely cares about you — all from your desktop.</p>
+    <div class="hero-btns">
+      <a class="btn btn-green" href="#download">⬇ Download Free</a>
+      <a class="btn btn-outline" href="https://payhip.com/b/hpIYE" target="_blank">Buy Full Access — CAD $10</a>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <p class="section-title">Everything Bubble can do</p>
+  <p class="section-sub">She's not just a chatbot. She's your companion.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">💬</div>
+      <h3>Real Conversations</h3>
+      <p>Bubble actually listens. She remembers what you tell her, picks up on your mood, and responds like someone who genuinely cares.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <h3>Web Search</h3>
+      <p>Ask Bubble to search Google, YouTube, Reddit, Wikipedia, or Amazon — she'll open it instantly.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎵</div>
+      <h3>Play Music</h3>
+      <p>Tell Bubble a song or artist and she'll open it on Spotify, Apple Music, or YouTube — whatever you use.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎮</div>
+      <h3>Game Grinder</h3>
+      <p>Bubble can auto-grind for you in Roblox and Minecraft so you can sit back and relax while she handles the repetitive stuff.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📺</div>
+      <h3>Open Videos</h3>
+      <p>Ask her to open YouTube, Netflix, Twitch, or Disney+ — she'll find it and open it up for you right away.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧠</div>
+      <h3>She Remembers You</h3>
+      <p>Bubble builds a memory of who you are — your hobbies, your vibe, your preferences. Every conversation feels personal.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section id="download">
+  <p class="section-title">Get Bubble</p>
+  <p class="section-sub">Free to download. One-time purchase for full access.</p>
+
+  <div class="download-box">
+    <h2>Bubble[ai] for Windows</h2>
+    <p>Download the launcher for free. When you open it you can start a 5-day free trial, or buy full access once — no subscription, no monthly fees.</p>
+
+    <div class="download-options">
+      <a class="btn btn-green" href="BubbleAI_v12.zip" download>⬇ Download Free — Windows</a>
+      <a class="btn btn-primary" href="https://payhip.com/b/hpIYE" target="_blank">💳 Buy Full Access — CAD $10</a>
+    </div>
+
+    <p class="version-tag">Latest: v1 &nbsp;·&nbsp; Windows 10 / 11 &nbsp;·&nbsp; 64-bit</p>
+
+    <div class="divider">What's included in the free download</div>
+
+    <div class="trial-strip">
+      <span class="icon">🕐</span>
+      <span><strong style="color:var(--text)">5-Day Free Trial</strong> — Download and launch Bubble for free. Enter the daily trial code to get 5 full days of access. No credit card needed.</span>
+    </div>
+    <div class="trial-strip" style="margin-top:0.8rem;">
+      <span class="icon">👑</span>
+      <span><strong style="color:var(--text)">Full Access — CAD $10</strong> — Pay once on Payhip and get a passkey that unlocks Bubble forever. No subscriptions, no renewals.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner">
+    <p class="section-title">About Bubble</p>
+    <p style="margin-top:1rem;">Bubble[ai] is a desktop AI companion built for Windows. She runs locally on your machine — fast, private, and always there when you need her.</p>
+    <p>She was built to be more than a tool. She's warm, funny, and she actually pays attention. Whether you're grinding a game, looking something up, or just want someone to talk to — Bubble's got you.</p>
+    <p>Made with love. 💜</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Bubble[ai] &nbsp;·&nbsp; <a href="https://payhip.com/b/hpIYE" target="_blank">Buy on Payhip</a> &nbsp;·&nbsp; Windows Only</p>
+</footer>
+
+</body>
+</html>
